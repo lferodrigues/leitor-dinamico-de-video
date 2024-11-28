@@ -28,21 +28,21 @@ function loadNextVideo() {
 // Evento para avançar automaticamente ao próximo vídeo quando o atual terminar
 videoPlayer.addEventListener('ended', loadNextVideo);
 
-// Função para buscar cotação do dólar
+// Função para buscar cotação do dólar com AwesomeAPI
 async function fetchDollarRate() {
     try {
-        const response = await fetch('https://open.er-api.com/v6/latest/USD');
+        const response = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL');
         if (!response.ok) {
             throw new Error('Erro ao acessar a API de cotação');
         }
         const data = await response.json();
 
-        // Verifica se a taxa BRL existe no retorno
-        if (data.rates && data.rates.BRL) {
-            const dollarRate = data.rates.BRL.toFixed(2);
+        // Acessa a taxa de câmbio na estrutura da AwesomeAPI
+        if (data.USDBRL && data.USDBRL.bid) {
+            const dollarRate = parseFloat(data.USDBRL.bid).toFixed(2);
             return `💵 Dólar: R$ ${dollarRate}`;
         } else {
-            throw new Error('Taxa BRL não encontrada no retorno da API');
+            throw new Error('Dados não encontrados na resposta da API');
         }
     } catch (error) {
         console.error('Erro ao buscar cotação do dólar:', error);
