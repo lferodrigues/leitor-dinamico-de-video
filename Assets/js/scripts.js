@@ -92,7 +92,7 @@ async function fetchWeatherByIp() {
         // Verifica se a propriedade 'loc' está presente e é válida
         if (ipData.loc && typeof ipData.loc === 'string') {
             const [lat, lon] = ipData.loc.split(','); // Divide a string "latitude,longitude"
-            
+
             if (!lat || !lon) {
                 throw new Error('Não foi possível obter a latitude ou longitude');
             }
@@ -101,7 +101,7 @@ async function fetchWeatherByIp() {
             console.log("Latitude:", lat, "Longitude:", lon);
 
             // Consulta a API OpenWeatherMap com base na localização
-            const apiKey = 'SUA_API_KEY_AQUI'; // Substitua pela sua chave da OpenWeatherMap
+            const apiKey = '26825e136efd15c22b2ccf106215cc58'; // Substitua pela sua chave da OpenWeatherMap
             const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=pt_br&appid=${apiKey}`;
 
             const weatherResponse = await fetch(url);
