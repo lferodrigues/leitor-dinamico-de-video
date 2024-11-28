@@ -1,0 +1,79 @@
+/* Fundo preto para todo o sistema */
+body {
+    background-color: #000;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow: hidden; /* Remove a barra de rolagem */
+}
+
+/* Container do vídeo */
+.video-container {
+    position: relative;
+    width: 100vw; /* Ajuste a largura para ocupar toda a tela */
+    height: calc(100vh - 80px); /* Ajuste a altura para ocupar toda a tela menos o rodapé */
+    display: block;
+    margin: 0 auto;
+}
+
+/* Player de vídeo mantém tamanho original */
+#videoPlayer {
+    width: 100vw; /* 100% da largura da viewport */
+    height: calc(100vh - 80px); /* Ajustar altura considerando o footer */
+    display: block;
+    margin: 0 auto;
+    background-color: #000;
+    object-fit: contain; /* Garante que o vídeo não distorça */
+}
+
+/* Rodapé com informações no topo do vídeo */
+#info-footer {
+    position: absolute;
+    top: 10px; /* Coloca as informações no topo do vídeo */
+    width: 100%; /* Ocupar toda a largura */
+    overflow: hidden; /* Esconde texto fora da área visível */
+    background: rgba(0, 0, 0, 0.8); /* Fundo semi-transparente */
+}
+
+#info-text {
+    display: inline-block; /* Necessário para a animação */
+    white-space: nowrap; /* Impede quebra de linha */
+    color: #fff;
+    font-size: 18px;
+    padding: 10px 20px;
+    animation: scroll-left 15s linear infinite; /* Rolagem contínua */
+}
+
+/* Animação de rolagem para a esquerda */
+@keyframes scroll-left {
+    0% {
+        transform: translateX(100%); /* Começa fora da tela à direita */
+    }
+    100% {
+        transform: translateX(-100%); /* Sai pela esquerda */
+    }
+}
+
+/* Footer (rodapé da página) */
+footer {
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    flex-shrink: 0;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+}
+
+.footer-content img {
+    width: 90px;
+    margin-right: 10px;
+}
