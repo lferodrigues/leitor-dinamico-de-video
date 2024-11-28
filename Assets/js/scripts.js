@@ -1,19 +1,42 @@
 // Atualiza o ano no rodapé
 document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-// Configuração dos vídeos
+// Configuração inicial de variáveis
 const videoFiles = [];
-const maxVideos = 3;
+let maxVideos = 3; // Valor padrão caso o usuário não forneça entrada válida
 const videoDirectory = 'Assets/media/';
-
-for (let i = 1; i <= maxVideos; i++) {
-    videoFiles.push(`${videoDirectory}video${i}.mp4`);
-}
 
 let currentVideoIndex = 0;
 
 const videoPlayer = document.getElementById('videoPlayer');
 const infoText = document.getElementById('info-text');
+
+// Garante que o vídeo esteja mudo para permitir reprodução automática
+videoPlayer.muted = true;
+
+// Pergunta ao usuário a quantidade de vídeos desejada
+function askVideoCount() {
+    let userInput = prompt("Quantos vídeos deseja passar? (1 a 100)");
+
+    // Valida a entrada do usuário
+    const parsedInput = parseInt(userInput, 10);
+    if (!isNaN(parsedInput) && parsedInput >= 1 && parsedInput <= 100) {
+        maxVideos = parsedInput; // Atualiza o número máximo de vídeos
+    } else {
+        alert("Entrada inválida! O número de vídeos será ajustado para o padrão: 3.");
+    }
+
+    // Após validar, inicializa os vídeos e inicia o primeiro
+    initializeVideoFiles();
+    loadNextVideo(); // Inicia automaticamente o primeiro vídeo
+}
+
+// Inicializa a lista de vídeos com base na quantidade definida
+function initializeVideoFiles() {
+    for (let i = 1; i <= maxVideos; i++) {
+        videoFiles.push(`${videoDirectory}video${i}.mp4`);
+    }
+}
 
 // Função para carregar o próximo vídeo
 function loadNextVideo() {
@@ -21,7 +44,9 @@ function loadNextVideo() {
         currentVideoIndex = 0; // Reinicia no primeiro vídeo
     }
     videoPlayer.src = videoFiles[currentVideoIndex];
-    videoPlayer.play();
+    videoPlayer.play().catch((error) => {
+        console.error('Erro ao reproduzir o vídeo:', error);
+    });
     currentVideoIndex++;
 }
 
@@ -50,7 +75,7 @@ async function fetchDollarRate() {
     }
 }
 
-// Função para buscar clima de São João Nepomuceno, MG
+// Função para buscar clima 
 async function fetchWeather() {
     try {
         // URL para buscar o clima da cidade
@@ -84,6 +109,6 @@ async function fetchInfo() {
 // Atualiza informações a cada 8 segundos
 setInterval(fetchInfo, 8000);
 
-// Carrega o primeiro vídeo ao iniciar e busca informações
-loadNextVideo();
-fetchInfo();
+// Fluxo de inicialização
+askVideoCount();        // Pergunta ao usuário a quantidade de vídeos
+fetchInfo();            // Atualiza as informações do rodapé
