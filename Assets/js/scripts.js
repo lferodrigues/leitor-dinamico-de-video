@@ -75,19 +75,52 @@ async function fetchDollarRate() {
     }
 }
 
-// Função para buscar clima 
-async function fetchWeather() {
+// Função para buscar clima com base na localização do dispositivo usando IP (sem chave de API)
+async function fetchWeatherByIp() {
     try {
-        // URL para buscar o clima da cidade
-        const url = `https://wttr.in/Sao+Joao+Nepomuceno?format=%C+%t&lang=pt`;
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error('Erro ao acessar a API do clima');
+        // Acessa a API de geolocalização por IP (ip-api.com)
+        const ipResponse = await fetch('http://ip-api.com/json');
+        if (!ipResponse.ok) {
+            throw new Error('Erro ao acessar a API de localização por IP');
         }
 
-        const weatherData = await response.text();
-        return `☁️ Clima: ${weatherData}`;
+        const ipData = await ipResponse.json();
+
+        // Log para verificar a resposta da API ip-api
+        console.log("Localização por IP:", ipData);
+
+        // Verifica se a propriedade 'loc' está presente e é válida
+        if (ipData.loc && typeof ipData.loc === 'string') {
+            const [lat, lon] = ipData.loc.split(','); // Divide a string "latitude,longitude"
+            
+            if (!lat || !lon) {
+                throw new Error('Não foi possível obter a latitude ou longitude');
+            }
+
+            // Log para verificar as coordenadas
+            console.log("Latitude:", lat, "Longitude:", lon);
+
+            // Consulta a API OpenWeatherMap com base na localização
+            const apiKey = 'SUA_API_KEY_AQUI'; // Substitua pela sua chave da OpenWeatherMap
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=pt_br&appid=${apiKey}`;
+
+            const weatherResponse = await fetch(url);
+            if (!weatherResponse.ok) {
+                throw new Error('Erro ao acessar a API do clima');
+            }
+
+            const weatherData = await weatherResponse.json();
+
+            // Log para verificar a resposta do clima
+            console.log("Dados do Clima:", weatherData);
+
+            const description = weatherData.weather[0].description;
+            const temperature = weatherData.main.temp.toFixed(1);
+
+            return `☁️ Clima: ${description}, ${temperature}°C`;
+        } else {
+            throw new Error('Geolocalização inválida ou não encontrada');
+        }
     } catch (error) {
         console.error('Erro ao buscar clima:', error);
         return '☁️ Clima: Informação indisponível';
@@ -98,7 +131,7 @@ async function fetchWeather() {
 async function fetchInfo() {
     try {
         const dollarInfo = await fetchDollarRate();
-        const weatherInfo = await fetchWeather();
+        const weatherInfo = await fetchWeatherByIp();
         infoText.textContent = `${dollarInfo} | ${weatherInfo}`;
     } catch (error) {
         console.error('Erro ao buscar informações:', error);
