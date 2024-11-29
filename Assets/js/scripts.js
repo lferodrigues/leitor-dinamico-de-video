@@ -53,7 +53,7 @@ function loadNextVideo() {
 // Evento para avançar automaticamente ao próximo vídeo quando o atual terminar
 videoPlayer.addEventListener('ended', loadNextVideo);
 
-// Função para buscar cotação do dólar com AwesomeAPI
+// Função para buscar a cotação do dólar usando a AwesomeAPI
 async function fetchDollarRate() {
     try {
         const response = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL');
@@ -75,10 +75,10 @@ async function fetchDollarRate() {
     }
 }
 
-// Função para buscar clima com base na localização do dispositivo usando IP (sem chave de API)
+// Função para buscar clima com base na localização do dispositivo
 async function fetchWeatherByIp() {
     try {
-        // Acessa a API de geolocalização por IP (ip-api.com)
+        // Acessa a API de geolocalização por IP
         const ipResponse = await fetch('http://ip-api.com/json');
         if (!ipResponse.ok) {
             throw new Error('Erro ao acessar a API de localização por IP');
@@ -86,41 +86,29 @@ async function fetchWeatherByIp() {
 
         const ipData = await ipResponse.json();
 
-        // Log para verificar a resposta da API ip-api
-        console.log("Localização por IP:", ipData);
+        // Verifica se os dados de latitude e longitude estão presentes
+        const { lat, lon } = ipData;
 
-        // Verifica se a propriedade 'loc' está presente e é válida
-        if (ipData.loc && typeof ipData.loc === 'string') {
-            const [lat, lon] = ipData.loc.split(','); // Divide a string "latitude,longitude"
-
-            if (!lat || !lon) {
-                throw new Error('Não foi possível obter a latitude ou longitude');
-            }
-
-            // Log para verificar as coordenadas
-            console.log("Latitude:", lat, "Longitude:", lon);
-
-            // Consulta a API OpenWeatherMap com base na localização
-            const apiKey = '26825e136efd15c22b2ccf106215cc58'; // Substitua pela sua chave da OpenWeatherMap
-            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=pt_br&appid=${apiKey}`;
-
-            const weatherResponse = await fetch(url);
-            if (!weatherResponse.ok) {
-                throw new Error('Erro ao acessar a API do clima');
-            }
-
-            const weatherData = await weatherResponse.json();
-
-            // Log para verificar a resposta do clima
-            console.log("Dados do Clima:", weatherData);
-
-            const description = weatherData.weather[0].description;
-            const temperature = weatherData.main.temp.toFixed(1);
-
-            return `☁️ Clima: ${description}, ${temperature}°C`;
-        } else {
-            throw new Error('Geolocalização inválida ou não encontrada');
+        if (!lat || !lon) {
+            throw new Error('Não foi possível obter a latitude ou longitude');
         }
+
+        // Consulta a API OpenWeatherMap com base na localização
+        const apiKey = '26825e136efd15c22b2ccf106215cc58'; // Substitua pela sua chave da OpenWeatherMap
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=pt_br&appid=${apiKey}`;
+
+        const weatherResponse = await fetch(url);
+        if (!weatherResponse.ok) {
+            throw new Error('Erro ao acessar a API do clima');
+        }
+
+        const weatherData = await weatherResponse.json();
+
+        // Extrai descrição do clima e temperatura
+        const description = weatherData.weather[0].description;
+        const temperature = weatherData.main.temp.toFixed(1);
+
+        return `☁️ Clima: ${description}, ${temperature}°C`;
     } catch (error) {
         console.error('Erro ao buscar clima:', error);
         return '☁️ Clima: Informação indisponível';
